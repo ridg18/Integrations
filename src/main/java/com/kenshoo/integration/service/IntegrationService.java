@@ -5,9 +5,11 @@ import com.kenshoo.integration.beans.Integration;
 import com.kenshoo.integration.repository.IntegrationDao;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -60,6 +62,9 @@ public class IntegrationService implements Serializable {
     public int migrate() {
         AtomicInteger count = new AtomicInteger();
         List<Integration> integrations = Lists.newArrayList(integrationDao.fetchAll());
+        if(CollectionUtils.isEmpty(integrations)){
+            return 0;
+        }
         integrations.stream().forEach(integration -> {
             try {
                 count.getAndAdd(integrationDao.update(integration.getId(),
